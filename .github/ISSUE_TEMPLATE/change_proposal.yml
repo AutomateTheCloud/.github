@@ -1,0 +1,31 @@
+name: Propose a change
+description: A new feature, input, or change in behavior. Agree on the approach here before writing code.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that you can't do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The change you're proposing
+      description: How it would work for someone using this code.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Effect on existing users
+      description: Would anyone's infrastructure be replaced, or would anyone have to change their code? Would any default become less secure?
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to make this change yourself?
+      options:
+        - "Yes, I'd like to open a pull request"
+        - "No, I'm suggesting it"
+    validations:
+      required: true

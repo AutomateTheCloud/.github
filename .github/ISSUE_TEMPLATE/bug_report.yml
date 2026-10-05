@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work the way the documentation says it should.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. **Security problems don't belong here**: use the
+        repository's **Security** tab and choose **Report a vulnerability**.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release, tag, or commit you're using.
+      placeholder: v1.2.0
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Tool and provider versions. For Terraform, paste the output of `terraform version`.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Include the full error message, if there was one.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce it
+      description: The smallest configuration that shows the problem. Remove account IDs, secrets, and anything else private.
+      render: hcl
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Workarounds you've found, related issues, or logs.
