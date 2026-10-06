@@ -61,6 +61,7 @@ Each module's README covers its inputs, outputs, and examples.
 | [terraform-aws-dynamodb_table](https://github.com/AutomateTheCloud/terraform-aws-dynamodb_table) | A DynamoDB table with indexes, autoscaling, streams, TTL, and replicas |
 | [terraform-aws-s3_bucket](https://github.com/AutomateTheCloud/terraform-aws-s3_bucket) | S3 buckets that are private, encrypted, and HTTPS-only |
 | [terraform-aws-efs](https://github.com/AutomateTheCloud/terraform-aws-efs) | An EFS file system with encryption, TLS, and mount targets |
+| [terraform-aws-influx](https://github.com/AutomateTheCloud/terraform-aws-influx) | A Timestream for InfluxDB instance, private and encrypted, with a security group for its clients |
 
 **Security and keys**
 
@@ -74,6 +75,7 @@ Each module's README covers its inputs, outputs, and examples.
 | Module | What it creates |
 |---|---|
 | [terraform-aws-ecr](https://github.com/AutomateTheCloud/terraform-aws-ecr) | An ECR repository with lifecycle rules and a repository policy |
+| [terraform-aws-ecs_cluster-fargate](https://github.com/AutomateTheCloud/terraform-aws-ecs_cluster-fargate) | An ECS cluster for Fargate tasks, with Container Insights and ECS Exec settings |
 | [terraform-aws-codedeploy](https://github.com/AutomateTheCloud/terraform-aws-codedeploy) | A CodeDeploy application and its service role |
 | [terraform-aws-sqs](https://github.com/AutomateTheCloud/terraform-aws-sqs) | An SQS queue with an optional dead-letter queue |
 | [terraform-aws-ssm_document](https://github.com/AutomateTheCloud/terraform-aws-ssm_document) | A Systems Manager document, such as a Run Command document or Automation runbook |
@@ -85,12 +87,10 @@ Written before the modules above, and not yet brought up to the same conventions
 
 | Module | What it creates |
 |---|---|
-| [terraform-aws-ecs_cluster-fargate](https://github.com/AutomateTheCloud/terraform-aws-ecs_cluster-fargate) | An ECS cluster on Fargate |
 | [terraform-aws-instance_deployment-linux](https://github.com/AutomateTheCloud/terraform-aws-instance_deployment-linux) | Linux EC2 instances behind an Auto Scaling group |
 | [terraform-aws-elasticache_redis](https://github.com/AutomateTheCloud/terraform-aws-elasticache_redis) | ElastiCache resources compatible with Redis |
 | [terraform-aws-redshift](https://github.com/AutomateTheCloud/terraform-aws-redshift) | Redshift clusters |
 | [terraform-aws-redshift_serverless](https://github.com/AutomateTheCloud/terraform-aws-redshift_serverless) | Redshift Serverless |
-| [terraform-aws-influx](https://github.com/AutomateTheCloud/terraform-aws-influx) | Timestream for InfluxDB databases |
 
 </details>
 
