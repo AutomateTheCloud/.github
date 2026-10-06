@@ -3,9 +3,15 @@
 # SPDX-License-Identifier: Apache-2.0
 """Compare the organization's public repositories with profile/README.md.
 
-    python3 scripts/scan-org.py
+    python3 scripts/scan-org.py               # check profile/README.md
+    python3 scripts/scan-org.py --table-only  # facts for the members-only README
 
 Needs the GitHub CLI (`gh`), signed in. Reads only; changes nothing.
+
+With --table-only it skips the README comparison and instead summarizes the
+current modules, the older ones, and the private repositories, which is what
+the members-only README in AutomateTheCloud/.github-private states. It always
+exits 0 in that mode.
 
 For every public repository it records whether the repository is a current
 module (Apache 2.0 LICENSE byte for byte, a CHANGELOG.md, protected main, and
@@ -82,9 +88,10 @@ def main():
             break
         page += 1
 
+    table_only = "--table-only" in sys.argv[1:]
     on_registry = registry_names()
-    listed = readme_entries()
-    problems = []
+    listed = {} if table_only else readme_entries()
+    problems, current_mods, older_mods = [], [], []
 
     print(f"{'repository':42} {'status':8} {'apache':6} {'chlog':5} {'prot':4} {'reg':3}  in README")
     for r in sorted(repos, key=lambda r: r["name"]):
@@ -106,7 +113,10 @@ def main():
         section = listed.get(name, ("-", ""))[0]
         yn = lambda b: "yes" if b else "no"
         print(f"{name:42} {status:8} {yn(apache):6} {yn(changelog):5} {yn(protected):4} {yn(registry):3}  {section}")
+        (current_mods if current else older_mods).append(name)
 
+        if table_only:
+            continue
         if name not in listed:
             problems.append(f"{name} ({status}) is not in the README. GitHub description: "
                             f"{r['description'] or '(none)'}")
@@ -125,6 +135,19 @@ def main():
             problems.append(f"{name} is listed under '{section}' but is not a public repository")
 
     print(f"\nRegistry lists {len(on_registry)} modules for {ORG}.")
+
+    if table_only:
+        private = gh(f"orgs/{ORG}/repos?type=private&per_page=100")
+        print(f"\nCurrent modules: {len(current_mods)}")
+        print(f"Older modules: {len(older_mods)}" + (f" ({', '.join(older_mods)})" if older_mods else ""))
+        print("Private repositories:")
+        for r in sorted(private, key=lambda r: r["name"]):
+            if r["name"] == ".github-private":
+                continue
+            print(f"  {r['name']}: {r['description'] or '(no description)'}, "
+                  f"last pushed {r['pushed_at'][:10]}{', archived' if r['archived'] else ''}")
+        return
+
     if problems:
         print(f"\n{len(problems)} thing(s) to update in profile/README.md:")
         for p in problems:

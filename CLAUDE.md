@@ -48,8 +48,8 @@ organization. Do not update it from memory or from an old list.
 4. **Check.** Run the scan again until it exits 0. Then confirm every link resolves (`gh api
    repos/AutomateTheCloud/<name>`), and that GitHub renders the file:
    `gh api markdown -f mode=gfm -F text=@profile/README.md`.
-5. **Update the members-only README** in `.github-private` to match: the module counts and the
-   list of older modules.
+5. **Update the members-only README** in `.github-private` to match. Its own `CLAUDE.md` has the
+   steps; `python3 scripts/scan-org.py --table-only` prints the facts it needs.
 
 ### Categories
 
