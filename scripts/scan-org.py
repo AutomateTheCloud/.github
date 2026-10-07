@@ -20,7 +20,8 @@ README disagrees: repositories missing from it, entries for repositories that
 no longer exist or are archived, and current modules filed under "Earlier
 modules" or the reverse. It prints each missing repository's GitHub description
 as a starting point; the README's descriptions are rewritten, so it does not
-compare them. Exits 1 when the README needs an update, 0 when it matches.
+compare them. Exits 1 when the README needs an update, 0 when it matches,
+and 2 when a GitHub API call fails for any reason other than "not found".
 """
 import base64
 import hashlib
@@ -29,6 +30,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 import urllib.request
 
 ORG = "AutomateTheCloud"
@@ -40,17 +42,23 @@ EARLIER = "Earlier modules"
 NOT_LISTED = {".github"}
 
 
-def gh(*args, allow_fail=False):
-    r = subprocess.run(["gh", "api", *args], capture_output=True, text=True)
-    if r.returncode != 0:
-        if allow_fail:
+def gh(*args, missing_ok=False):
+    """Call gh api. With missing_ok, a 404 returns None. Any other failure is
+    retried, then stops the scan: treating it as "missing" would mark a good
+    module as older."""
+    for attempt in range(3):
+        r = subprocess.run(["gh", "api", *args], capture_output=True, text=True)
+        if r.returncode == 0:
+            return json.loads(r.stdout) if r.stdout.strip() else None
+        if missing_ok and "(HTTP 404)" in r.stderr:
             return None
-        sys.exit(f"gh api {' '.join(args)} failed:\n{r.stderr}")
-    return json.loads(r.stdout) if r.stdout.strip() else None
+        time.sleep(2 ** attempt)
+    print(f"gh api {' '.join(args)} failed:\n{r.stderr}", file=sys.stderr)
+    sys.exit(2)
 
 
 def license_is_apache(repo):
-    f = gh(f"repos/{ORG}/{repo}/contents/LICENSE", allow_fail=True)
+    f = gh(f"repos/{ORG}/{repo}/contents/LICENSE", missing_ok=True)
     if not f or f.get("type") != "file":
         return False
     return hashlib.sha256(base64.b64decode(f["content"])).hexdigest() == APACHE_SHA256
@@ -104,9 +112,9 @@ def main():
                 problems.append(f"{name} is archived but still listed under '{listed[name][0]}'")
             continue
         apache = license_is_apache(name)
-        changelog = gh(f"repos/{ORG}/{name}/contents/CHANGELOG.md", allow_fail=True) is not None
+        changelog = gh(f"repos/{ORG}/{name}/contents/CHANGELOG.md", missing_ok=True) is not None
         protected = gh(f"repos/{ORG}/{name}/branches/{r['default_branch']}/protection",
-                       allow_fail=True) is not None
+                       missing_ok=True) is not None
         registry = name in on_registry
         current = apache and changelog and protected and registry
         status = "current" if current else "older"
