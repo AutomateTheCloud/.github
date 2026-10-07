@@ -59,6 +59,7 @@ Each module's README covers its inputs, outputs, and examples.
 | [terraform-aws-rds_aurora](https://github.com/AutomateTheCloud/terraform-aws-rds_aurora) | An Aurora PostgreSQL or MySQL cluster |
 | [terraform-aws-rds_aurora_global_cluster](https://github.com/AutomateTheCloud/terraform-aws-rds_aurora_global_cluster) | An Aurora global cluster, encrypted and protected from deletion |
 | [terraform-aws-dynamodb_table](https://github.com/AutomateTheCloud/terraform-aws-dynamodb_table) | A DynamoDB table with indexes, autoscaling, streams, TTL, and replicas |
+| [terraform-aws-keyspaces-keyspace](https://github.com/AutomateTheCloud/terraform-aws-keyspaces-keyspace) | An Amazon Keyspaces keyspace, in one Region or replicated across several |
 | [terraform-aws-elasticache_redis](https://github.com/AutomateTheCloud/terraform-aws-elasticache_redis) | An ElastiCache replication group running Redis OSS or Valkey, encrypted and private |
 | [terraform-aws-s3_bucket](https://github.com/AutomateTheCloud/terraform-aws-s3_bucket) | S3 buckets that are private, encrypted, and HTTPS-only |
 | [terraform-aws-efs](https://github.com/AutomateTheCloud/terraform-aws-efs) | An EFS file system with encryption, TLS, and mount targets |
@@ -79,7 +80,7 @@ Each module's README covers its inputs, outputs, and examples.
 |---|---|
 | [terraform-aws-ecr](https://github.com/AutomateTheCloud/terraform-aws-ecr) | An ECR repository with lifecycle rules and a repository policy |
 | [terraform-aws-ecs_cluster-fargate](https://github.com/AutomateTheCloud/terraform-aws-ecs_cluster-fargate) | An ECS cluster for Fargate tasks, with Container Insights and ECS Exec settings |
-| [terraform-aws-instance_deployment-linux](https://github.com/AutomateTheCloud/terraform-aws-instance_deployment-linux) | Linux EC2 instances in an Auto Scaling group, set up at boot and replaced in rolling batches |
+| [terraform-aws-autoscaling_group-linux](https://github.com/AutomateTheCloud/terraform-aws-autoscaling_group-linux) | Linux EC2 instances in an Auto Scaling group, set up at boot and replaced in rolling batches |
 | [terraform-aws-codedeploy](https://github.com/AutomateTheCloud/terraform-aws-codedeploy) | A CodeDeploy application and its service role |
 | [terraform-aws-sqs](https://github.com/AutomateTheCloud/terraform-aws-sqs) | An SQS queue with an optional dead-letter queue |
 | [terraform-aws-ssm_document](https://github.com/AutomateTheCloud/terraform-aws-ssm_document) | A Systems Manager document, such as a Run Command document or Automation runbook |
