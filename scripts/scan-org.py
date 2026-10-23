@@ -9,16 +9,18 @@
 Needs the GitHub CLI (`gh`), signed in. Reads only; changes nothing.
 
 With --table-only it skips the README comparison and instead summarizes the
-current modules, the older ones, and the private repositories, which is what
-the members-only README in AutomateTheCloud/.github-private states. It always
-exits 0 in that mode.
+current modules, the older ones, the other public projects, and the private
+repositories, which is what the members-only README in
+AutomateTheCloud/.github-private states. It always exits 0 in that mode.
 
-For every public repository it records whether the repository is a current
-module (Apache 2.0 LICENSE byte for byte, a CHANGELOG.md, protected main, and
-listed on the Terraform Registry) or an older one, then reports where the
-README disagrees: repositories missing from it, entries for repositories that
-no longer exist or are archived, and current modules filed under "Earlier
-modules" or the reverse. It prints each missing repository's GitHub description
+Every public repository belongs in the README. A repository named terraform-*
+is a module: the scan records whether it is current (Apache 2.0 LICENSE byte
+for byte, a CHANGELOG.md, protected main, and listed on the Terraform Registry)
+or older. Any other repository is a project and belongs under "Other projects".
+It then reports where the README disagrees: repositories missing from it,
+entries for repositories that no longer exist or are archived, current modules
+filed under "Earlier modules" or the reverse, and modules and projects filed in
+each other's place. It prints each missing repository's GitHub description
 as a starting point; the README's descriptions are rewritten, so it does not
 compare them. Exits 1 when the README needs an update, 0 when it matches,
 and 2 when a GitHub API call fails for any reason other than "not found".
@@ -38,6 +40,7 @@ README = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "profile
 # SHA-256 of https://www.apache.org/licenses/LICENSE-2.0.txt, from the licensing playbook.
 APACHE_SHA256 = "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
 EARLIER = "Earlier modules"
+PROJECTS = "Other projects"
 # Repositories that are not modules and never appear in the module index.
 NOT_LISTED = {".github"}
 
@@ -76,7 +79,8 @@ def readme_entries():
     """Repository name -> (section heading, description) as the README lists them."""
     entries, section = {}, None
     for line in open(README, encoding="utf-8"):
-        h = re.match(r"^\*\*(.+?)\*\*\s*$", line) or re.search(r"<summary><b>(.+?)</b></summary>", line)
+        h = (re.match(r"^\*\*(.+?)\*\*\s*$", line) or re.match(r"^##\s+(.+?)\s*$", line)
+             or re.search(r"<summary><b>(.+?)</b></summary>", line))
         if h:
             section = h.group(1)
             continue
@@ -99,7 +103,7 @@ def main():
     table_only = "--table-only" in sys.argv[1:]
     on_registry = registry_names()
     listed = {} if table_only else readme_entries()
-    problems, current_mods, older_mods = [], [], []
+    problems, current_mods, older_mods, projects = [], [], [], []
 
     print(f"{'repository':42} {'status':8} {'apache':6} {'chlog':5} {'prot':4} {'reg':3}  in README")
     for r in sorted(repos, key=lambda r: r["name"]):
@@ -115,19 +119,32 @@ def main():
         changelog = gh(f"repos/{ORG}/{name}/contents/CHANGELOG.md", missing_ok=True) is not None
         protected = gh(f"repos/{ORG}/{name}/branches/{r['default_branch']}/protection",
                        missing_ok=True) is not None
+        is_module = name.startswith("terraform-")
         registry = name in on_registry
-        current = apache and changelog and protected and registry
-        status = "current" if current else "older"
+        current = is_module and apache and changelog and protected and registry
+        status = ("current" if current else "older") if is_module else "project"
         section = listed.get(name, ("-", ""))[0]
         yn = lambda b: "yes" if b else "no"
-        print(f"{name:42} {status:8} {yn(apache):6} {yn(changelog):5} {yn(protected):4} {yn(registry):3}  {section}")
-        (current_mods if current else older_mods).append(name)
+        reg = yn(registry) if is_module else "-"
+        print(f"{name:42} {status:8} {yn(apache):6} {yn(changelog):5} {yn(protected):4} {reg:3}  {section}")
+        if not is_module:
+            projects.append(name)
+        else:
+            (current_mods if current else older_mods).append(name)
 
         if table_only:
             continue
         if name not in listed:
             problems.append(f"{name} ({status}) is not in the README. GitHub description: "
                             f"{r['description'] or '(none)'}")
+            continue
+        if not is_module:
+            if section != PROJECTS:
+                problems.append(f"{name} is not a Terraform module but is listed under '{section}'; "
+                                f"it belongs under '{PROJECTS}'")
+            continue
+        if section == PROJECTS:
+            problems.append(f"{name} is a Terraform module but is listed under '{PROJECTS}'")
             continue
         if current and section == EARLIER:
             problems.append(f"{name} is now a current module but is listed under '{EARLIER}'")
@@ -148,6 +165,7 @@ def main():
         private = gh(f"orgs/{ORG}/repos?type=private&per_page=100")
         print(f"\nCurrent modules: {len(current_mods)}")
         print(f"Older modules: {len(older_mods)}" + (f" ({', '.join(older_mods)})" if older_mods else ""))
+        print(f"Other public projects: {len(projects)}" + (f" ({', '.join(projects)})" if projects else ""))
         print("Private repositories:")
         for r in sorted(private, key=lambda r: r["name"]):
             if r["name"] == ".github-private":

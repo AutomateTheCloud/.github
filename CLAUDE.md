@@ -23,12 +23,14 @@ way, so update both together.
 
 ## Updating the profile README
 
-The module index in `profile/README.md` is written by hand, but what belongs in it comes from the
-organization. Do not update it from memory or from an old list.
+The README lists every public repository in the organization: Terraform modules by category, and
+everything else under "Other projects". The lists are written by hand, but what belongs in them
+comes from the organization. Do not update them from memory or from an old list.
 
 1. **Scan.** Run `python3 scripts/scan-org.py`. It needs the GitHub CLI, signed in, and changes
-   nothing. For each public repository it checks four things, and a module counts as **current**
-   only when all four hold:
+   nothing. A repository named `terraform-*` is a module; any other public repository is a
+   **project**. For each module it checks four things, and a module counts as **current** only
+   when all four hold:
    - `LICENSE` is the Apache 2.0 text byte for byte (by SHA-256),
    - `CHANGELOG.md` exists,
    - the default branch is protected,
@@ -41,11 +43,15 @@ organization. Do not update it from memory or from an old list.
    - **Current module listed under "Earlier modules":** move it up into its category. When that
      leaves "Earlier modules" empty, delete the whole `<details>` block and its intro line.
    - **Older module listed in a category, archived, or deleted:** move it down, or remove the row.
-3. **Write each description** from the module's own README and GitHub description, not from the
-   module's name. Each one is a single "What it creates" phrase: start with the resource, name
-   the AWS service as AWS does, keep a notable secure default if the module has one, and don't
-   use marketing words. Compare it with the rows around it.
-4. **Check.** Run the scan again until it exits 0. Then confirm every link resolves (`gh api
+   - **Missing project:** add a row under "Other projects", in alphabetical order.
+   - **Project listed with the modules, or module listed under "Other projects":** move it.
+3. **Write each description** from the repository's own README and GitHub description, not from
+   its name. For a module, write a single "What it creates" phrase: start with the resource, name
+   the AWS service as AWS does, and keep a notable secure default if the module has one. For a
+   project, write a single "What it is" phrase ("A library for bash scripts: ..."). Don't use
+   marketing words, and compare each one with the rows around it.
+4. **Check.** Run the scan again until it exits 0, and run it twice: it exits 2, not 1, when a
+   GitHub API call fails. Then confirm every link resolves (`gh api
    repos/AutomateTheCloud/<name>`), and that GitHub renders the file:
    `gh api markdown -f mode=gfm -F text=@profile/README.md`.
 5. **Update the members-only README** in `.github-private` to match. Its own `CLAUDE.md` has the
@@ -63,8 +69,9 @@ Keep the existing order. Put a module in the one category that matches what it m
 | Security and keys | KMS keys, key pairs, IAM building blocks, secrets |
 | Delivery and operations | Container registries, deployment, queues, Systems Manager, compute services such as ECS |
 
-If a module fits none of them, or a public repository isn't a Terraform module at all, ask before
-creating a new section.
+If a module fits none of them, ask before creating a new category. A public repository that isn't
+a Terraform module goes under "Other projects", after the categories; don't make a new section
+for it.
 
 ### What stays fixed
 
