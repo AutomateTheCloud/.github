@@ -62,6 +62,7 @@ Each module's README covers its inputs, outputs, and examples.
 | [terraform-aws-keyspaces-keyspace](https://github.com/AutomateTheCloud/terraform-aws-keyspaces-keyspace) | An Amazon Keyspaces keyspace, in one Region or replicated across several |
 | [terraform-aws-elasticache_redis](https://github.com/AutomateTheCloud/terraform-aws-elasticache_redis) | An ElastiCache replication group running Redis OSS or Valkey, encrypted and private |
 | [terraform-aws-s3_bucket](https://github.com/AutomateTheCloud/terraform-aws-s3_bucket) | S3 buckets that are private, encrypted, and HTTPS-only |
+| [terraform-aws-s3_bucket-logs](https://github.com/AutomateTheCloud/terraform-aws-s3_bucket-logs) | An S3 bucket for security and audit logs, with each AWS service limited to the accounts and prefix you name |
 | [terraform-aws-efs](https://github.com/AutomateTheCloud/terraform-aws-efs) | An EFS file system with encryption, TLS, and mount targets |
 | [terraform-aws-influx](https://github.com/AutomateTheCloud/terraform-aws-influx) | A Timestream for InfluxDB instance, private and encrypted, with a security group for its clients |
 | [terraform-aws-redshift](https://github.com/AutomateTheCloud/terraform-aws-redshift) | A Redshift cluster, encrypted and private, with TLS required and its password in Secrets Manager |
@@ -85,9 +86,16 @@ Each module's README covers its inputs, outputs, and examples.
 | [terraform-aws-sqs](https://github.com/AutomateTheCloud/terraform-aws-sqs) | An SQS queue with an optional dead-letter queue |
 | [terraform-aws-ssm_document](https://github.com/AutomateTheCloud/terraform-aws-ssm_document) | A Systems Manager document, such as a Run Command document or Automation runbook |
 
+## Other projects
+
+| Project | What it is |
+|---|---|
+| [bamf](https://github.com/AutomateTheCloud/bamf) | A library for bash scripts: logging, named exit codes, temporary files that are always cleaned up, and signal handling |
+| [openwaymark](https://github.com/AutomateTheCloud/openwaymark) | An open format for study bundles: practice questions and flashcards in YAML, packed in a ZIP file, with a schema, validator, and command-line tool |
+
 ## Licensing
 
-The modules are open source. Our code is released under the
+Our modules and projects are open source. Our code is released under the
 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), and each repository's `LICENSE`
 file states its terms. The Automate the Cloud name and logo are not covered by these licenses.
 
